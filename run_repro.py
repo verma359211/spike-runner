@@ -75,6 +75,7 @@ def main():
     branch = f"repro/{run_id}"
     started = time.monotonic()
     branch_created = False
+    workflow_run_to_delete = None
     classification = "infra_error"
 
     session = requests.Session()
@@ -182,11 +183,18 @@ def main():
                     classification = classify(result)
                 except KeyError:
                     classification = "infra_error"
+        workflow_run_to_delete = workflow_run["id"]
     finally:
         if branch_created:
             check_response(
                 session.delete(
                     f"{repo_url}/git/refs/heads/{quote(branch, safe='')}"
+                )
+            )
+        if workflow_run_to_delete:
+            check_response(
+                session.delete(
+                    f"{repo_url}/actions/runs/{workflow_run_to_delete}"
                 )
             )
         print(f"classification: {classification}")

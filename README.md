@@ -15,3 +15,4 @@
 9. Run all three samples three times each: `python run_all.py --repo OWNER/spike-target`
 
 The target repository must contain the `repro.yml` workflow from `spike-target`, and GitHub Actions must be enabled.
+After reading the result, the runner deletes both the temporary branch and its workflow run.
