@@ -17,6 +17,21 @@ POLL_SECONDS = 3
 TIMEOUT_SECONDS = 300
 
 
+def get_token():
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        return token
+
+    env_file = Path(__file__).with_name(".env")
+    if env_file.is_file():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            key, separator, value = line.partition("=")
+            if separator and key.strip() == "GITHUB_TOKEN":
+                return value.strip().strip("\"'")
+
+    return None
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", required=True, help="Target repository as OWNER/NAME")
@@ -48,9 +63,9 @@ def classify(result):
 
 def main():
     args = parse_args()
-    token = os.environ.get("GITHUB_TOKEN")
+    token = get_token()
     if not token:
-        raise RuntimeError("GITHUB_TOKEN is not set")
+        raise RuntimeError("GITHUB_TOKEN is not set in the environment or .env")
     if args.repo.count("/") != 1:
         raise RuntimeError("--repo must be in OWNER/NAME format")
     if not args.test.is_file():

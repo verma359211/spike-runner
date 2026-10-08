@@ -1,8 +1,9 @@
 import argparse
-import os
 import subprocess
 import sys
 from pathlib import Path
+
+from run_repro import get_token
 
 
 SAMPLES = [
@@ -47,8 +48,8 @@ def main():
     parser.add_argument("--repo", required=True, help="Target repository as OWNER/NAME")
     args = parser.parse_args()
 
-    if not os.environ.get("GITHUB_TOKEN"):
-        raise RuntimeError("GITHUB_TOKEN is not set")
+    if not get_token():
+        raise RuntimeError("GITHUB_TOKEN is not set in the environment or .env")
 
     print(f"{'sample':28} {'expected':16} {'actual':16} {'seconds':9} result")
     print("-" * 82)
